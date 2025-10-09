@@ -98,3 +98,86 @@ Presenter - презентер содержит основную логику п
 `emit<T extends object>(event: string, data?: T): void` - инициализация события. При вызове события в метод передается название события и объект с данными, который будет использован как аргумент для вызова обработчика.  
 `trigger<T extends object>(event: string, context?: Partial<T>): (data: T) => void` - возвращает функцию, при вызове которой инициализируется требуемое в параметрах событие с передачей в него данных из второго параметра.
 
+
+##### Данные
+###### Товар
+
+interface IProduct {
+  id: string;           уникальный идентификатор
+  description: string;  описание
+  image: string;        картинка
+  title: string;        название
+  category: string;     категория
+  price: number | null; цена в синапсах
+}
+
+##### Покупатель
+interface IBuyer {
+  payment: TPayment;  вид оплаты
+  email: string;      email
+  phone: string;      телефон
+  address: string;    адрес доставки
+}
+
+######   Тип оплаты
+type TPayment = 'card' | 'cash';
+
+###### Модели данных
+Класс `Products`
+Назначение: каталог товаров.  
+
+Поля:
+`items: IProduct[]` — список всех товаров.  
+`selected: IProduct | null` — товар для предпросмотра.  
+
+Методы: 
+`setItems(items: IProduct[]): void` — сохранить товары.  
+`getItems(): IProduct[]` — вернуть все товары.  
+`getItemById(id: string): IProduct | undefined` — найти по ID.  
+`setSelected(item: IProduct): void` — выбрать товар.  
+`getSelected(): IProduct | null` — получить выбранный.
+
+###### Класс `Cart`
+Назначение: корзина покупателя.  
+
+Поля:  
+`items: IProduct[]` — выбранные товары.  
+
+Методы:  
+`getItems(): IProduct[]` — вернуть товары корзины.  
+`addItem(product: IProduct): void` — добавить товар.  
+`removeItem(product: IProduct): void` — удалить товар.  
+`clear(): void` — очистить корзину.  
+`getTotal(): number` — сумма всех товаров.  
+`getCount(): number` — количество товаров.  
+`hasItem(id: string): boolean` — проверка наличия по ID.
+
+######  Класс `Buyer`
+Назначение: данные покупателя.  
+
+Поля:  
+`data: Partial<IBuyer>` — объект с полями покупателя.  
+
+Методы:  
+`setPayment(payment: TPayment): void`  
+`setEmail(email: string): void`  
+`setPhone(phone: string): void`  
+`setAddress(address: string): void`  
+`getData(): Partial<IBuyer>` — получить все данные.  
+`clear(): void` — очистить данные.  
+`validate(): Record<string, string>` — валидация.  
+
+Пример результата валидации:  
+{
+  payment: 'Не выбран вид оплаты',
+  email: 'Укажите email'
+}
+
+
+###### Коротко
+`Products` управляет каталогом;  
+`Cart` отвечает за корзину;  
+`Buyer` хранит и валидирует данные покупателя.  
+
+UML-схема классов хранится в файле `UML.png`.
+
