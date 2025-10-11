@@ -1,8 +1,10 @@
 import './scss/styles.scss';
-import { Products } from './components/base/models/Products';
-import { Cart } from './components/base/models/Cart';
-import { Buyer } from './components/base/models/Buyer';
+import { Products } from './models/Products';
+import { Cart } from './models/Cart';
+import { Buyer } from './models/Buyer';
 import { IApi, IProduct } from './types';
+import { ApiService } from './ApiService';
+
 
 const api: IApi = {
     async get<T>(uri: string): Promise<T> {
