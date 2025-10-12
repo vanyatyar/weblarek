@@ -1,4 +1,4 @@
-import { IApi, IProduct, IOrder, IOrderResponse } from '../types';
+import { IApi, IProduct, IOrder, IOrderResponse } from './types';
 
 export interface IOrderResponse {
     id: string;

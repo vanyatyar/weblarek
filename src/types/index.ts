@@ -26,3 +26,7 @@
         buyer: IBuyer;
     }
   
+    export interface IOrderResponse { 
+        id: string;
+        total: number;
+    }
