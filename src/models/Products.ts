@@ -1,22 +1,34 @@
+import { EventEmitter } from '../components/base/events';
 import { IProduct } from '../types';
+
 export class Products {
-    private items: IProduct[] = [];
-    private selected: IProduct | null = null;
+  private items: IProduct[] = [];
+  private selectedProduct: IProduct | null = null;
+  private eventEmitter: EventEmitter;
 
-    setItems(items: IProduct[]): void {
-        this.items = items;
-    }
+  constructor(eventEmitter: EventEmitter) {
+    this.eventEmitter = eventEmitter;
+  }
 
-    getItems(): IProduct[] {
-        return this.items;
-    }
-    getItemById(id: string): IProduct | undefined {
-        return this.items.find((item) => item.id === id);
-    }
-    setSelected(item: IProduct): void {
-        this.selected = item;
-    }
-    getSelected(): IProduct | null {
-        return this.selected;
-    }
+  setItems(items: IProduct[]): void {
+    this.items = items;
+    this.eventEmitter.emit('products:changed', { items: this.items });
+  }
+
+  getItems(): IProduct[] {
+    return this.items;
+  }
+
+  getItem(id: string): IProduct | undefined {
+    return this.items.find(item => item.id === id);
+  }
+
+  setSelectedProduct(product: IProduct): void {
+    this.selectedProduct = product;
+    this.eventEmitter.emit('product:selected', { product });
+  }
+
+  getSelectedProduct(): IProduct | null {
+    return this.selectedProduct;
+  }
 }
