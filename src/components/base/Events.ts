@@ -1,26 +1,26 @@
+type EventHandler<T = unknown> = (data: T) => void;
+
 export class EventEmitter {
-  private events: { [eventName: string]: Function[] } = {};
+  private events: { [event: string]: EventHandler[] } = {};
 
-  on(eventName: string, callback: Function) {
-    if (!this.events[eventName]) {
-      this.events[eventName] = [];
+  on<T = unknown>(event: string, callback: EventHandler<T>) {
+    if (!this.events[event]) {
+      this.events[event] = [];
     }
-    this.events[eventName].push(callback);
+    this.events[event].push(callback as EventHandler);
   }
 
-  emit(eventName: string, data?: any) {
-    const eventCallbacks = this.events[eventName];
-    if (eventCallbacks) {
-      eventCallbacks.forEach(callback => {
-        callback(data);
-      });
+  emit<T = unknown>(event: string, data?: T) {
+    const handlers = this.events[event];
+    if (handlers) {
+      handlers.forEach(handler => handler(data));
     }
   }
 
-  off(eventName: string, callback: Function) {
-    const eventCallbacks = this.events[eventName];
-    if (eventCallbacks) {
-      this.events[eventName] = eventCallbacks.filter(cb => cb !== callback);
+  off(event: string, callback: EventHandler) {
+    const handlers = this.events[event];
+    if (handlers) {
+      this.events[event] = handlers.filter(handler => handler !== callback);
     }
   }
 }

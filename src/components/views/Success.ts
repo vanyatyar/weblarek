@@ -22,9 +22,4 @@ export class Success extends Component<{ total: number }> {
   set total(value: number) {
     this.setText(this._description, `Списано ${value} синапсов`);
   }
-
-  render(data: { total: number }): HTMLElement {
-    super.render(data);
-    return this.container;
-  }
 }

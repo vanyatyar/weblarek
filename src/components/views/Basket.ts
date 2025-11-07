@@ -1,10 +1,16 @@
 import { Component } from '../base/component';
 
+interface IBasket {
+  items: HTMLElement[];
+  total: number;
+  buttonDisabled: boolean;
+}
+
 interface IBasketActions {
   onClick: () => void;
 }
 
-export class Basket extends Component<{ items: HTMLElement[]; total: number }> {
+export class Basket extends Component<IBasket> {
   protected _list: HTMLElement;
   protected _total: HTMLElement;
   protected _button: HTMLButtonElement;
@@ -31,15 +37,5 @@ export class Basket extends Component<{ items: HTMLElement[]; total: number }> {
 
   set buttonDisabled(value: boolean) {
     this._button.disabled = value;
-  }
-
-  render(data: { items: HTMLElement[]; total: number; buttonDisabled?: boolean }): HTMLElement {
-    super.render(data);
-    
-    if (data.buttonDisabled !== undefined) {
-      this.buttonDisabled = data.buttonDisabled;
-    }
-    
-    return this.container;
   }
 }
