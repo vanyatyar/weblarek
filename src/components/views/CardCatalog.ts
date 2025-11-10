@@ -11,9 +11,12 @@ export class CardCatalog extends Card<IProduct> {
   protected _category: HTMLElement;
 
   constructor(container: HTMLElement, actions?: ICatalogItemActions) {
-    super('card', container, actions);
+    super(container);
     this._image = container.querySelector('.card__image')!;
     this._category = container.querySelector('.card__category')!;
+    if (actions?.onClick) {
+      this.container.addEventListener('click', actions.onClick);
+    }
   }
 
   set image(value: string) {
@@ -22,7 +25,14 @@ export class CardCatalog extends Card<IProduct> {
 
   set category(value: string) {
     this.setText(this._category, value);
-    // Применяем класс категории для цвета фона
     this._category.className = `card__category ${categoryMap[value] || ''}`;
+  }
+
+  render(data: IProduct): HTMLElement {
+    this.title = data.title;
+    this.price = data.price;
+    this.image = data.image;
+    this.category = data.category;
+    return this.container;
   }
 }

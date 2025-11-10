@@ -10,14 +10,26 @@ interface IBasketItem extends Partial<IProduct> {
 }
 
 export class CardBasket extends Card<IBasketItem> {
-  protected _index: HTMLElement;
+    protected _index: HTMLElement;
+    protected _button: HTMLButtonElement | null; 
+    constructor(container: HTMLElement, actions?: IBasketItemActions) {
+        super(container);
+        this._index = container.querySelector('.basket__item-index')!;
+        this._button = container.querySelector('.card__button'); 
+        if (this._button && actions?.onClick) {
+            this._button.addEventListener('click', actions.onClick);
+        }
+    }
 
-  constructor(container: HTMLElement, actions?: IBasketItemActions) {
-    super('card', container, actions);
-    this._index = container.querySelector('.basket__item-index')!;
-  }
+    set buttonText(value: string) {
+        if (this._button) { 
+            this.setText(this._button, value);
+        }
+    }
 
-  set index(value: number) {
-    this.setText(this._index, value.toString());
-  }
+    set buttonDisabled(value: boolean) {
+        if (this._button) { 
+            this.setDisabled(this._button, value);
+        }
+    }
 }

@@ -1,5 +1,5 @@
-import { Component } from '../base/component';
-import { EventEmitter } from '../base/events';
+import { Component } from '../base/Component';
+import { EventEmitter } from '../base/Events';
 
 export class Form<T> extends Component<T> {
   protected _submitButton: HTMLButtonElement;

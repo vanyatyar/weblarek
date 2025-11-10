@@ -1,5 +1,5 @@
 import { Form } from './Form';
-import { EventEmitter } from '../base/events';
+import { EventEmitter } from '../base/Events';
 import { IBuyer } from '../../types';
 
 interface IOrderForm extends Partial<IBuyer> {

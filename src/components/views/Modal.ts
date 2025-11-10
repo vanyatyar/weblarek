@@ -1,15 +1,14 @@
-import { Component } from '../base/component';
+import { Component } from '../base/Component';
 
 export class Modal extends Component<{}> {
   private closeButton: HTMLButtonElement;
+  private contentContainer: HTMLElement;
   private handleEscapeBound: (event: KeyboardEvent) => void;
 
   constructor(container: HTMLElement) {
     super(container);
-
     this.closeButton = container.querySelector('.modal__close')!;
-    this.handleEscapeBound = this.handleEscape.bind(this);
-    
+    this.contentContainer = container.querySelector('.modal__content')!;
     this.closeButton.addEventListener('click', this.close.bind(this));
     this.container.addEventListener('click', this.handleOutsideClick.bind(this));
   }
@@ -25,9 +24,8 @@ export class Modal extends Component<{}> {
   }
 
   setContent(content: HTMLElement): void {
-    const contentContainer = this.container.querySelector('.modal__content')!;
-    contentContainer.innerHTML = '';
-    contentContainer.appendChild(content);
+    this.contentContainer.innerHTML = '';
+    this.contentContainer.appendChild(content);
   }
 
   openWithContent(content: HTMLElement): void {

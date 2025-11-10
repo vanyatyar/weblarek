@@ -1,4 +1,5 @@
-import { Component } from '../base/component';
+import { Component } from '../base/Component';
+import { ensureElement } from '../../utils/utils';
 
 interface IBasket {
   items: HTMLElement[];
@@ -17,10 +18,9 @@ export class Basket extends Component<IBasket> {
 
   constructor(container: HTMLElement, actions?: IBasketActions) {
     super(container);
-
-    this._list = container.querySelector('.basket__list')!;
-    this._total = container.querySelector('.basket__price')!;
-    this._button = container.querySelector('.basket__button')!;
+    this._list = ensureElement<HTMLElement>('.basket__list', container);
+    this._total = ensureElement<HTMLElement>('.basket__price', container);
+    this._button = ensureElement<HTMLButtonElement>('.basket__button', container);
 
     if (actions?.onClick) {
       this._button.addEventListener('click', actions.onClick);
@@ -36,6 +36,6 @@ export class Basket extends Component<IBasket> {
   }
 
   set buttonDisabled(value: boolean) {
-    this._button.disabled = value;
+    this.setDisabled(this._button, value);
   }
 }

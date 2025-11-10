@@ -1,42 +1,41 @@
 export abstract class Component<T> {
-  protected container: HTMLElement;
+    public container: HTMLElement;
 
-  constructor(container: HTMLElement) {
-    this.container = container;
-  }
-
-  // Переключить класс
-  toggleClass(element: HTMLElement, className: string, force?: boolean) {
-    element.classList.toggle(className, force);
-  }
-
-  // Установить текстовое содержимое
-  setText(element: HTMLElement, value: string) {
-    element.textContent = value;
-  }
-
-  // Сменить статус блокировки
-  setDisabled(element: HTMLElement, state: boolean) {
-    if (state) {
-      element.setAttribute('disabled', 'disabled');
-    } else {
-      element.removeAttribute('disabled');
+    constructor(container: HTMLElement) {
+        this.container = container;
     }
-  }
 
-  // Установить изображение с альтернативным текстом
-  setImage(element: HTMLImageElement, src: string, alt?: string) {
-    element.src = src;
-    if (alt) {
-      element.alt = alt;
+    toggleClass(element: HTMLElement, className: string, force?: boolean) {
+        element.classList.toggle(className, force);
     }
-  }
 
-  // Вернуть корневой DOM-элемент
-  render(data?: Partial<T>): HTMLElement {
-    if (data) {
-      Object.assign(this as object, data);
+    protected setText(element: HTMLElement, value: unknown) {
+        if (element) {
+            element.textContent = String(value);
+        }
     }
-    return this.container;
-  }
+
+    protected setImage(element: HTMLImageElement, src: string, alt?: string) {
+        if (element) {
+            element.src = src;
+            if (alt) {
+                element.alt = alt;
+            }
+        }
+    }
+
+    protected setDisabled(element: HTMLElement, state: boolean) {
+        if (element) {
+            if (state) {
+                element.setAttribute('disabled', 'disabled');
+            } else {
+                element.removeAttribute('disabled');
+            }
+        }
+    }
+
+    render(data?: Partial<T>): HTMLElement {
+        Object.assign(this as object, data);
+        return this.container;
+    }
 }

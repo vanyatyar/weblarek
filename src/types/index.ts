@@ -17,9 +17,12 @@ export interface IBuyer {
 export type TPayment = 'card' | 'cash';
 
 export interface IOrder {
-  items: string[];
-  total: number;
-  buyer: IBuyer;
+    payment: 'card' | 'cash'; 
+    email: string;
+    phone: string;
+    items: string[];
+    total: number;
+    buyer?: IBuyer;
 }
 
 export interface IOrderResponse {
