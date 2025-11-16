@@ -22,6 +22,8 @@ export class Basket extends Component<IBasket> {
     this._total = ensureElement<HTMLElement>('.basket__price', container);
     this._button = ensureElement<HTMLButtonElement>('.basket__button', container);
 
+    this.setDisabled(this._button, true);
+
     if (actions?.onClick) {
       this._button.addEventListener('click', actions.onClick);
     }
@@ -29,6 +31,7 @@ export class Basket extends Component<IBasket> {
 
   set items(value: HTMLElement[]) {
     this._list.replaceChildren(...value);
+    this.setDisabled(this._button, value.length === 0);
   }
 
   set total(value: number) {

@@ -15,64 +15,62 @@ import { Success } from './components/views/Success';
 import { IProduct, IOrder, IBuyer } from './types';
 import { API_URL } from './utils/constants';
 import { cloneTemplate, ensureElement } from './utils/utils';
+import { Api } from './components/base/Api'; 
+class CatalogView {
+  private container: HTMLElement;
+
+  constructor(container: HTMLElement) {
+    this.container = container;
+  }
+
+  render(products: IProduct[], onCardClick: (product: IProduct) => void): void {
+    const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
+    const cards = products.map(product => {
+      const cardElement = cloneTemplate(cardCatalogTemplate);
+      const card = new CardCatalog(cardElement, {
+        onClick: () => onCardClick(product)
+      });
+      return card.render(product);
+    });
+    this.container.replaceChildren(...cards);
+  }
+}
 
 const events = new EventEmitter();
 const productsModel = new Products(events);
 const cartModel = new Cart(events);
 const buyerModel = new Buyer(events);
-const apiService = new ApiService({
-  get: async (url: string) => {
-    const response = await fetch(`${API_URL}${url}`);
-    return await response.json();
-  },
-  post: async (url: string, data: any) => {
-    const response = await fetch(`${API_URL}${url}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    return await response.json();
-  }
-});
+
+const api = new Api(API_URL);
+const apiService = new ApiService(api);
 
 const galleryEl = ensureElement<HTMLElement>('.gallery');
 const basketCounter = ensureElement<HTMLElement>('.header__basket-counter');
 const basketBtn = ensureElement<HTMLElement>('.header__basket');
 const modal = new Modal(ensureElement<HTMLElement>('#modal-container'));
-
 const basketTemplate = ensureElement<HTMLTemplateElement>('#basket');
 const basketView = new Basket(cloneTemplate(basketTemplate), {
   onClick: () => events.emit('order:open')
 });
-
 const orderTemplate = ensureElement<HTMLTemplateElement>('#order');
 const orderForm = new OrderForm(cloneTemplate(orderTemplate), events);
-
 const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts');
 const contactsForm = new ContactsForm(cloneTemplate(contactsTemplate), events);
-
 const successTemplate = ensureElement<HTMLTemplateElement>('#success');
 const successView = new Success(cloneTemplate(successTemplate), {
   onClick: () => {
     modal.close();
   }
 });
-
-const cardCatalogTemplate = ensureElement<HTMLTemplateElement>('#card-catalog');
 const cardPreviewTemplate = ensureElement<HTMLTemplateElement>('#card-preview');
 const cardBasketTemplate = ensureElement<HTMLTemplateElement>('#card-basket');
 
+const catalogView = new CatalogView(galleryEl);
+
 events.on('products:changed', (data: { items: IProduct[] }) => {
-  const cards = data.items.map(product => {
-    const cardElement = cloneTemplate(cardCatalogTemplate);
-    const card = new CardCatalog(cardElement, {
-      onClick: () => {
-        events.emit('card:select', { product });
-      }
-    });
-    return card.render(product);
+  catalogView.render(data.items, (product) => {
+    events.emit('card:select', { product });
   });
-  galleryEl.replaceChildren(...cards);
 });
 
 events.on('card:select', (data: { product: IProduct }) => {
@@ -106,7 +104,7 @@ events.on('product:selected', (data: { product: IProduct }) => {
 
 events.on('cart:changed', (data: { items: IProduct[] }) => {
   const count = data.items.length;
-  basketCounter.textContent = count.toString();  
+  basketCounter.textContent = count.toString();
   const basketItems = data.items.map((item, index) => {
     const basketItemElement = cloneTemplate(cardBasketTemplate);
     const basketCard = new CardBasket(basketItemElement, {
@@ -154,9 +152,15 @@ events.on('order.address:change', (data: { address: string }) => {
 });
 
 events.on('order:submit', () => {
-  updateContactsForm();
-  modal.open();
-  modal.setContent(contactsForm.container);
+  const isOrderValid = Boolean(buyerModel.payment) && Boolean(buyerModel.address);
+  
+  if (isOrderValid) {
+    updateContactsForm();
+    modal.open();
+    modal.setContent(contactsForm.container);
+  } else {
+    updateOrderForm();
+  }
 });
 
 events.on('contacts.email:change', (data: { email: string }) => {
@@ -170,10 +174,14 @@ events.on('contacts.phone:change', (data: { phone: string }) => {
 events.on('contacts:submit', async () => {
   try {
     const order: IOrder = {
-      items: cartModel.getItems().map(item => item.id),
+      payment: buyerModel.payment === 'card' ? 'online' : 'receipt', 
+      email: buyerModel.email,
+      phone: buyerModel.phone,
+      address: buyerModel.address,
       total: cartModel.getTotal(),
-      ...buyerModel as IBuyer
+      items: cartModel.getItems().map(item => item.id)
     };
+
     const result = await apiService.sendOrder(order);
     successView.render({ total: result.total });
     modal.setContent(successView.container);
@@ -182,7 +190,7 @@ events.on('contacts:submit', async () => {
   } catch (error) {
     contactsForm.render({
       ...buyerModel as Partial<IBuyer>,
-      valid: true,
+      valid: false,
       errors: 'Ошибка при оформлении заказа'
     });
   }

@@ -17,12 +17,13 @@ export interface IBuyer {
 export type TPayment = 'card' | 'cash';
 
 export interface IOrder {
-    payment: 'card' | 'cash'; 
+  payment: 'online' | 'receipt';
     email: string;
     phone: string;
     items: string[];
     total: number;
     buyer?: IBuyer;
+    address: string
 }
 
 export interface IOrderResponse {

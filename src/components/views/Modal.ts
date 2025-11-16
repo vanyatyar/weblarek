@@ -9,6 +9,9 @@ export class Modal extends Component<{}> {
     super(container);
     this.closeButton = container.querySelector('.modal__close')!;
     this.contentContainer = container.querySelector('.modal__content')!;
+    
+    this.handleEscapeBound = this.handleEscape.bind(this);
+    
     this.closeButton.addEventListener('click', this.close.bind(this));
     this.container.addEventListener('click', this.handleOutsideClick.bind(this));
   }
